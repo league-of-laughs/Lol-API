@@ -3,24 +3,26 @@ import Meme from '../meme';
 
 const axios = require('axios');
 
-let Memes = [
-    "https://sports-images.vice.com/images/2017/01/25/when-nick-young-the-basketball-player-met-nick-young-the-meme-body-image-1485378510.jpg",
-    "https://sports-images.vice.com/images/2017/01/25/when-nick-young-the-basketball-player-met-nick-young-the-meme-body-image-1485378510.jpg",
-    "https://sports-images.vice.com/images/2017/01/25/when-nick-young-the-basketball-player-met-nick-young-the-meme-body-image-1485378510.jpg"
-]
 
 class GameDriver{
     players: Player[];
-    memeOne: Meme;
-    memeTwo: Meme;
+    memeOneVotes: number;
+    memeTwoVotes: number;
     playerVotingOne: String;
     playerVotingTwo: String;
     displayMeme: String;
+    playersUploaded: number;
+    numPlayers:number;
 
     constructor(){
         this.players = [];
-        this.memeOne = null;
-        this.memeTwo = null;
+        this.memeOneVotes = 0;
+        this.memeTwoVotes = 0;
+        this.playerVotingOne = null;
+        this.playerVotingTwo = null;
+        this.displayMeme = null;
+        this.playersUploaded = 0;
+        this.numPlayers = null;
     }
 
     addPlayer(playerName: String){
@@ -29,15 +31,11 @@ class GameDriver{
     }
 
     voteMemeOne(){
-        this.memeOne.addVote;
+        this.memeOneVotes ++;
     }
 
     voteMemeTwo(){
-        this.memeTwo.addVote;
-    }
-
-    setNewDisplayMeme(){
-        this.displayMeme = Memes[Math.floor(Math.random()*Memes.length)];
+        this.memeTwoVotes ++;
     }
 
     updatePlayerMeme(name:String, top:String, bottom:String){
@@ -50,9 +48,27 @@ class GameDriver{
         })
     }
 
-    
+    setPlayerVotingOne(name:String){
+        this.playerVotingOne = name;
+    }
 
+    setPlayerVotingTwo(name:String){
+        this.playerVotingTwo = name;
+    }
 
+    resetRound(){
+        this.memeOneVotes = 0;
+        this.memeTwoVotes = 0;
+        this.playerVotingOne = null;
+        this.playerVotingTwo = null;
+        this.players.map(player => {
+            player.voted = false;
+        })
+    }
+
+    increasePlayersUploaded(){
+        this.playersUploaded ++;
+    }
 
 }
 

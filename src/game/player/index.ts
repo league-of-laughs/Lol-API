@@ -31,6 +31,13 @@ class Player{
         this.number = number;
     }
 
+    setUploaded(){
+        this.uploaded = true;
+    }
+
+    setKnockedOut(){
+        this.knockedOut = true;
+    }
 }
 
 export default Player;

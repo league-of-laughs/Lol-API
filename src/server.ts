@@ -14,25 +14,14 @@ app.get('/test',(req,res) => {
 
 const io = require('socket.io')(server)
 
-let game:GameDriver;
+let game = new GameDriver();
 
 io.on('connection',(socket) => {
     console.log('new user connected');
 
     socket.on('test',() => {
-        game = new GameDriver();
-
-        game.setNewDisplayMeme();
-
-        game.addPlayer("mike");
-
-        game.updatePlayerMeme("mike","lol","pls");
-
-        game.playerVotingOne = "mike";
-
-        game.voteMemeOne();
-        socket.broadcast.emit('testing',game.players);
-        console.log('sent data');
+        console.log('testing')
+        socket.broadcast.emit('web-playerUploadedMeme',"alex");
     })
 
     socket.on('web-newGame',() => {
@@ -41,59 +30,84 @@ io.on('connection',(socket) => {
     })
 
     socket.on('mobile-addPlayer',(name: String) => {
+        console.log(name);
         game.addPlayer(name);
         socket.broadcast.emit('web-displayAddedPlayer',name);
     })
 
-    socket.on('web-startGame', () => {
-        game.setNewDisplayMeme();
-        socket.broadcast.emit('start',game.displayMeme);
+    socket.on('web-startGame', (meme) => {
+        console.log('starting game')
+        game.numPlayers = game.players.length;
+        console.log(game.numPlayers);
+        socket.broadcast.emit('mobile-start',meme);
     })
 
     socket.on('mobile-uploadMeme',(data) => {
-        let incomplete = true; 
+        console.log('player uploading meme')
+        data = JSON.parse(data);
+        console.log(data);
+        
+        game.increasePlayersUploaded()
 
         let {name,topText,bottomText} = data;
 
         game.updatePlayerMeme(name,topText,bottomText);
 
-        socket.broadcast.emit('uploaded',name);
+        socket.broadcast.emit('web-playerUploadedMeme',name);
 
-        game.players.map(player => {
+        for(let player of game.players){
             if(player.name == name)
-                player.voted = true;
-            
-            if(player.voted == false)
-                incomplete = false;
-        })
+                player.setUploaded();
+        }
 
-        if(!incomplete)
-            socket.emit('doneUploading',game.players);
+        let incomplete = true; 
+        for(let player of game.players){
+            if(player.uploaded == false)
+                incomplete = false;
+        }
+        console.log("number of players"+game.numPlayers);
+        console.log("players uploaded"+game.playersUploaded)
+
+        if(game.playersUploaded == game.numPlayers){
+            console.log('done uploading')
+            socket.broadcast.emit('web-doneUploading',game.players);
+        }
     })
 
     socket.on('web-setPlayerNumbers',(data) => {
-        let{name1,number1,name2,number2} = data;
-        game.players.map(player =>{
+        console.log('assigning 2 players');
+        console.log(data)
+        let{name1,name2} = data;
+        for(let player of game.players) {
             if(player.name == name1)
-                number1 == 1 ? game.playerVotingOne = player.name :
-                game.playerVotingTwo = player.name
-        })
-        game.players.map(player =>{
+                game.setPlayerVotingOne(player.name);
+        }
+        for(let player of game.players){
             if(player.name == name2)
-                number2 == 1 ? game.playerVotingOne = player.name :
-                game.playerVotingTwo = player.name
-        })
+                game.setPlayerVotingTwo(player.name)
+        }
+
+        socket.broadcast.emit('mobile-startVoting');
     })
 
     socket.on('mobile-voteMeme',(data) => {
+        
+        data = JSON.parse(data);
+        console.log(data);
+        console.log('voting')
         let incomplete = true;
 
         let{name,number} = data;
+        console.log(name);
+        console.log(number);
 
-        if(number == 1)
-            game.voteMemeOne
-        else
-            game.voteMemeTwo
+        if(number == 1){
+            game.voteMemeOne();
+        }
+           
+        else{
+            game.voteMemeTwo()
+        }
 
         game.players.map(player => {
             if(player.name == name)
@@ -102,36 +116,57 @@ io.on('connection',(socket) => {
                 incomplete = false;
         })
 
-        if(!incomplete){
+        if(incomplete){
+            console.log('there is a winner')
             let winner;
-            if(game.memeOne.votes > game.memeTwo.votes){
-                winner = 1;
-                game.players.map(player => {
+            let winningMeme;
+            if(game.memeOneVotes > game.memeTwoVotes){
+                console.log(game.playerVotingOne)
+                console.log("loser: "+ game.playerVotingTwo)
+                winner = game.playerVotingOne;
+                for(let player of game.players){
+                    if(player.name == winner)
+                        winningMeme = player.currentMeme
                     if(player.name == game.playerVotingTwo)
-                        player.knockedOut = true;
-                })
+                        player.setKnockedOut();
+                }
             }
             else{
-                winner = 2;
-                game.players.map(player => {
+                console.log(game.playerVotingTwo)
+                winner = game.playerVotingTwo;
+                for(let player of game.players){
+                    if(player.name == winner)
+                        winningMeme = player.currentMeme
                     if(player.name == game.playerVotingOne)
-                        player.knockedOut = true;
-                })
+                        player.setKnockedOut();
+                }
             }
+            socket.broadcast.emit('web-addWinner',winner)
+            let winnerData = {
+                meme: winningMeme,
+                data: game.players
+            }
+
+            console.log(game.players);
+            console.log('winner is: ')
+            console.log(winner);
             
-            socket.broadcast.emit('voting-done',winner);
+            
+            socket.broadcast.emit('voting-done',winnerData);
+            game.resetRound();
         }
+
+        socket.on('web-gameOver',(winnerName: String) => {
+            socket.broadcast.emit('gameWinner',winnerName);
+        })
+
+        socket.on('web-newGame',() => {
+            game = new GameDriver();
+            socket.broadcast.emit('restart');
+        })
         
     })
-
-    socket.on('API', ()=> {
-        console.log('ios hit')
-    })
-
-    
 
 })
 
 console.log('server running');
-
-// app.listen(3000);

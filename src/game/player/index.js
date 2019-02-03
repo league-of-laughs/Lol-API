@@ -19,6 +19,12 @@ var Player = /** @class */ (function () {
     Player.prototype.setNumber = function (number) {
         this.number = number;
     };
+    Player.prototype.setUploaded = function () {
+        this.uploaded = true;
+    };
+    Player.prototype.setKnockedOut = function () {
+        this.knockedOut = true;
+    };
     return Player;
 }());
 exports["default"] = Player;

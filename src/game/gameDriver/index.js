@@ -3,29 +3,26 @@ exports.__esModule = true;
 var player_1 = require("../player");
 var meme_1 = require("../meme");
 var axios = require('axios');
-var Memes = [
-    "https://sports-images.vice.com/images/2017/01/25/when-nick-young-the-basketball-player-met-nick-young-the-meme-body-image-1485378510.jpg",
-    "https://sports-images.vice.com/images/2017/01/25/when-nick-young-the-basketball-player-met-nick-young-the-meme-body-image-1485378510.jpg",
-    "https://sports-images.vice.com/images/2017/01/25/when-nick-young-the-basketball-player-met-nick-young-the-meme-body-image-1485378510.jpg"
-];
 var GameDriver = /** @class */ (function () {
     function GameDriver() {
         this.players = [];
-        this.memeOne = null;
-        this.memeTwo = null;
+        this.memeOneVotes = 0;
+        this.memeTwoVotes = 0;
+        this.playerVotingOne = null;
+        this.playerVotingTwo = null;
+        this.displayMeme = null;
+        this.playersUploaded = 0;
+        this.numPlayers = null;
     }
     GameDriver.prototype.addPlayer = function (playerName) {
         var player = new player_1["default"](playerName);
         this.players.push(player);
     };
     GameDriver.prototype.voteMemeOne = function () {
-        this.memeOne.addVote;
+        this.memeOneVotes++;
     };
     GameDriver.prototype.voteMemeTwo = function () {
-        this.memeTwo.addVote;
-    };
-    GameDriver.prototype.setNewDisplayMeme = function () {
-        this.displayMeme = Memes[Math.floor(Math.random() * Memes.length)];
+        this.memeTwoVotes++;
     };
     GameDriver.prototype.updatePlayerMeme = function (name, top, bottom) {
         var _this = this;
@@ -36,6 +33,24 @@ var GameDriver = /** @class */ (function () {
                 player.currentMeme.updateTopText(top);
             }
         });
+    };
+    GameDriver.prototype.setPlayerVotingOne = function (name) {
+        this.playerVotingOne = name;
+    };
+    GameDriver.prototype.setPlayerVotingTwo = function (name) {
+        this.playerVotingTwo = name;
+    };
+    GameDriver.prototype.resetRound = function () {
+        this.memeOneVotes = 0;
+        this.memeTwoVotes = 0;
+        this.playerVotingOne = null;
+        this.playerVotingTwo = null;
+        this.players.map(function (player) {
+            player.voted = false;
+        });
+    };
+    GameDriver.prototype.increasePlayersUploaded = function () {
+        this.playersUploaded++;
     };
     return GameDriver;
 }());
