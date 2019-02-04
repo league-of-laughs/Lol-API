@@ -127,6 +127,7 @@ io.on('connection',(socket) => {
                 for(let player of game.players){
                     if(player.name == winner)
                         winningMeme = player.currentMeme
+                        
                     if(player.name == game.playerVotingTwo)
                         player.setKnockedOut();
                 }
@@ -156,15 +157,17 @@ io.on('connection',(socket) => {
             game.resetRound();
         }
 
-        socket.on('web-gameOver',(winnerName: String) => {
-            socket.broadcast.emit('gameWinner',winnerName);
-        })
-
-        socket.on('web-newGame',() => {
-            game = new GameDriver();
-            socket.broadcast.emit('restart');
-        })
         
+        
+    })
+    socket.on('web-gameOver',(winnerName) => {
+        console.log(winnerName);
+        socket.broadcast.emit('gameWinner',winnerName);
+    })
+
+    socket.on('web-newGame',() => {
+        game = new GameDriver();
+        socket.broadcast.emit('restart');
     })
 
 })

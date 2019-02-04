@@ -132,13 +132,14 @@ io.on('connection', function (socket) {
             socket.broadcast.emit('voting-done', winnerData);
             game.resetRound();
         }
-        socket.on('web-gameOver', function (winnerName) {
-            socket.broadcast.emit('gameWinner', winnerName);
-        });
-        socket.on('web-newGame', function () {
-            game = new gameDriver_1["default"]();
-            socket.broadcast.emit('restart');
-        });
+    });
+    socket.on('web-gameOver', function (winnerName) {
+        console.log(winnerName);
+        socket.broadcast.emit('gameWinner', winnerName);
+    });
+    socket.on('web-newGame', function () {
+        game = new gameDriver_1["default"]();
+        socket.broadcast.emit('restart');
     });
 });
 console.log('server running');
