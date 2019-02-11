@@ -21,7 +21,7 @@ io.on('connection',(socket) => {
 
     socket.on('test',() => {
         console.log('testing')
-        socket.broadcast.emit('web-playerUploadedMeme',"alex");
+        // socket.broadcast.emit('web-playerUploadedMeme',"alex");
     })
 
     socket.on('web-newGame',() => {
@@ -112,8 +112,10 @@ io.on('connection',(socket) => {
         game.players.map(player => {
             if(player.name == name)
                 player.voted = true;
-            if(player.voted == false)
+            if(player.voted == false){
                 incomplete = false;
+                console.log('not done yet');
+            }
         })
 
         if(incomplete){
