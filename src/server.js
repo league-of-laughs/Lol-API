@@ -2,7 +2,6 @@
 exports.__esModule = true;
 var express = require('express');
 var bodyparser = require('body-parser');
-var cors = require('cors');
 var gameDriver_1 = require("./game/gameDriver");
 var app = express();
 app.use(bodyparser.json());
