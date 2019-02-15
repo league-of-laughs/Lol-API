@@ -2,9 +2,14 @@
   "name": "lol-api",
   "version": "1.0.0",
   "description": "the api for the lol app",
-  "main": "index.js",
+  "main": "./src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./src/server.js",
+    "build-ts":"tsc",
+    "postinstall": "npm run build-ts"
+  },
+  "engines":{
+    "node":"11.2.0"
   },
   "author": "",
   "license": "ISC",

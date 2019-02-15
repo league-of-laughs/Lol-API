@@ -9,7 +9,7 @@ app.use(bodyparser.json());
 let server = app.listen(3000);
 
 app.get('/test',(req,res) => {
-    res.send('success');
+    res.sendFile('./pages/landing/index.html');
 })
 
 const io = require('socket.io')(server)
