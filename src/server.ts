@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyparser = require('body-parser');
-const cors = require('cors');
 
 import GameDriver from './game/gameDriver';
 
