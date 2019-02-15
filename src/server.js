@@ -3,6 +3,7 @@ exports.__esModule = true;
 var express = require('express');
 var bodyparser = require('body-parser');
 var port = process.env.PORT || 3000;
+var host = '0.0.0.0';
 var gameDriver_1 = require("./game/gameDriver");
 var app = express();
 app.use(bodyparser.json());
@@ -11,7 +12,7 @@ app.get('/', function (req, res) {
     console.log('hit');
     res.sendFile('/pages/landing/index.html', { root: __dirname });
 });
-var server = app.listen(port);
+var server = app.listen(port, host);
 var io = require('socket.io')(server);
 var game = new gameDriver_1["default"]();
 io.on('connection', function (socket) {
