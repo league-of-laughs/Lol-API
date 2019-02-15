@@ -15,7 +15,6 @@ io.on('connection', function (socket) {
     console.log('new user connected');
     socket.on('test', function () {
         console.log('testing');
-        // socket.broadcast.emit('web-playerUploadedMeme',"alex");
     });
     socket.on('web-newGame', function () {
         game = new gameDriver_1["default"]();
@@ -145,3 +144,4 @@ io.on('connection', function (socket) {
     });
 });
 console.log('server running');
+//# sourceMappingURL=server.js.map

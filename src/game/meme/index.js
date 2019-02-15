@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var Meme = /** @class */ (function () {
+var Meme = (function () {
     function Meme(url) {
         this.url = url;
         this.topText = null;
@@ -22,3 +22,4 @@ var Meme = /** @class */ (function () {
     return Meme;
 }());
 exports["default"] = Meme;
+//# sourceMappingURL=index.js.map
