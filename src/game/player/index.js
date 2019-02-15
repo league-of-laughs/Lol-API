@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var Player = (function () {
+var Player = /** @class */ (function () {
     function Player(name) {
         this.name = name;
         this.knockedOut = false;
@@ -28,4 +28,3 @@ var Player = (function () {
     return Player;
 }());
 exports["default"] = Player;
-//# sourceMappingURL=index.js.map

@@ -7,11 +7,16 @@ import GameDriver from './game/gameDriver';
 const app = express();
 
 app.use(bodyparser.json());
-app.use(cors)
+// app.use(cors)
+
+
 
 app.get('/',(req,res) => {
-    res.sendFile('./pages/landing/index.html');
+    console.log('hit')
+    res.sendFile('/pages/landing/index.html',{root:__dirname});
 })
+
+let server = app.listen(3000);
 
 const io = require('socket.io')(server)
 
@@ -174,6 +179,5 @@ io.on('connection',(socket) => {
     })
 
 })
-app.listen(3000);
 
 console.log('server running');

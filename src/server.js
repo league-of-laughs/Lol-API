@@ -2,19 +2,23 @@
 exports.__esModule = true;
 var express = require('express');
 var bodyparser = require('body-parser');
+var cors = require('cors');
 var gameDriver_1 = require("./game/gameDriver");
 var app = express();
 app.use(bodyparser.json());
-var server = app.listen(3000);
-app.get('/test', function (req, res) {
-    res.sendFile('./pages/landing/index.html');
+// app.use(cors)
+app.get('/', function (req, res) {
+    console.log('hit');
+    res.sendFile('/pages/landing/index.html', { root: __dirname });
 });
+var server = app.listen(3000);
 var io = require('socket.io')(server);
 var game = new gameDriver_1["default"]();
 io.on('connection', function (socket) {
     console.log('new user connected');
     socket.on('test', function () {
         console.log('testing');
+        // socket.broadcast.emit('web-playerUploadedMeme',"alex");
     });
     socket.on('web-newGame', function () {
         game = new gameDriver_1["default"]();
@@ -144,4 +148,3 @@ io.on('connection', function (socket) {
     });
 });
 console.log('server running');
-//# sourceMappingURL=server.js.map

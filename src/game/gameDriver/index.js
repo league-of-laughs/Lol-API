@@ -3,7 +3,7 @@ exports.__esModule = true;
 var player_1 = require("../player");
 var meme_1 = require("../meme");
 var axios = require('axios');
-var GameDriver = (function () {
+var GameDriver = /** @class */ (function () {
     function GameDriver() {
         this.players = [];
         this.memeOneVotes = 0;
@@ -55,4 +55,3 @@ var GameDriver = (function () {
     return GameDriver;
 }());
 exports["default"] = GameDriver;
-//# sourceMappingURL=index.js.map
