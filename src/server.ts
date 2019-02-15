@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyparser = require('body-parser');
 
+const port = process.env.PORT || 3000;
+
 import GameDriver from './game/gameDriver';
 
 const app = express();
@@ -15,7 +17,7 @@ app.get('/',(req,res) => {
     res.sendFile('/pages/landing/index.html',{root:__dirname});
 })
 
-let server = app.listen(3000);
+let server = app.listen(port);
 
 const io = require('socket.io')(server)
 
