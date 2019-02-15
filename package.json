@@ -5,16 +5,19 @@
   "main": "./src/server.js",
   "scripts": {
     "start": "node ./src/server.js",
-    "build-ts":"tsc",
-    "postinstall": "npm run build-ts"
+    "postinstall": "npm run tsc",
+    "tsc": "tsc"
   },
-  "engines":{
-    "node":"11.2.0"
+  "engines": {
+    "node": "11.2.0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "typescript": "3.2.2"
   }
 }
