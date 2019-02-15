@@ -1,14 +1,15 @@
 const express = require('express');
 const bodyparser = require('body-parser');
+const cors = require('cors');
 
 import GameDriver from './game/gameDriver';
 
 const app = express();
 
 app.use(bodyparser.json());
-let server = app.listen(3000);
+app.use(cors)
 
-app.get('/test',(req,res) => {
+app.get('/',(req,res) => {
     res.sendFile('./pages/landing/index.html');
 })
 
@@ -173,5 +174,6 @@ io.on('connection',(socket) => {
     })
 
 })
+app.listen(3000);
 
 console.log('server running');
