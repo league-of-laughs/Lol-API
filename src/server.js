@@ -7,7 +7,7 @@ var app = express();
 app.use(bodyparser.json());
 var server = app.listen(3000);
 app.get('/test', function (req, res) {
-    res.send('success');
+    res.sendFile('./pages/landing/index.html');
 });
 var io = require('socket.io')(server);
 var game = new gameDriver_1["default"]();
@@ -91,8 +91,10 @@ io.on('connection', function (socket) {
         game.players.map(function (player) {
             if (player.name == name)
                 player.voted = true;
-            if (player.voted == false)
+            if (player.voted == false) {
                 incomplete = false;
+                console.log('not done yet');
+            }
         });
         if (incomplete) {
             console.log('there is a winner');
