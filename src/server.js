@@ -8,10 +8,10 @@ var gameDriver_1 = require("./game/gameDriver");
 var app = express();
 app.use(bodyparser.json());
 // app.use(cors)
-// app.get('/',(req,res) => {
-//     console.log('hit')
-//     res.sendFile('/pages/landing/index.html',{root:__dirname});
-// })
+app.get('/', function (req, res) {
+    console.log('hit');
+    res.sendFile('/pages/landing/index.html', { root: __dirname });
+});
 var server = app.listen(3000);
 var io = require('socket.io')(server);
 var game = new gameDriver_1["default"]();

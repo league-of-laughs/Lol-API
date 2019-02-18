@@ -13,10 +13,10 @@ app.use(bodyparser.json());
 
 
 
-// app.get('/',(req,res) => {
-//     console.log('hit')
-//     res.sendFile('/pages/landing/index.html',{root:__dirname});
-// })
+app.get('/',(req,res) => {
+    console.log('hit')
+    res.sendFile('/pages/landing/index.html',{root:__dirname});
+})
 
 let server = app.listen(3000);
 
