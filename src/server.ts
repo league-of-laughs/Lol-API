@@ -18,7 +18,7 @@ app.get('/',(req,res) => {
     res.sendFile('/pages/landing/index.html',{root:__dirname});
 })
 
-let server = app.listen(3000);
+let server = app.listen(port);
 
 const io = require('socket.io')(server)
 

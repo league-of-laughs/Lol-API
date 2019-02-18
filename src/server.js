@@ -12,7 +12,7 @@ app.get('/', function (req, res) {
     console.log('hit');
     res.sendFile('/pages/landing/index.html', { root: __dirname });
 });
-var server = app.listen(3000);
+var server = app.listen(port);
 var io = require('socket.io')(server);
 var game = new gameDriver_1["default"]();
 io.on('connection', function (socket) {
