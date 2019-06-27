@@ -2,8 +2,7 @@
 exports.__esModule = true;
 var player_1 = require("../player");
 var meme_1 = require("../meme");
-var axios = require('axios');
-var GameDriver = /** @class */ (function () {
+var GameDriver = (function () {
     function GameDriver() {
         this.players = [];
         this.memeOneVotes = 0;
@@ -12,11 +11,12 @@ var GameDriver = /** @class */ (function () {
         this.playerVotingTwo = null;
         this.displayMeme = null;
         this.playersUploaded = 0;
-        this.numPlayers = null;
+        this.numPlayers = 0;
     }
     GameDriver.prototype.addPlayer = function (playerName) {
         var player = new player_1["default"](playerName);
         this.players.push(player);
+        this.numPlayers++;
     };
     GameDriver.prototype.voteMemeOne = function () {
         this.memeOneVotes++;
@@ -52,6 +52,10 @@ var GameDriver = /** @class */ (function () {
     GameDriver.prototype.increasePlayersUploaded = function () {
         this.playersUploaded++;
     };
+    GameDriver.prototype.getNumPlayers = function () {
+        return this.numPlayers;
+    };
     return GameDriver;
 }());
 exports["default"] = GameDriver;
+//# sourceMappingURL=index.js.map

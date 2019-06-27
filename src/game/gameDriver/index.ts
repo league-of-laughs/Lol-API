@@ -1,9 +1,6 @@
 import Player from '../player';
 import Meme from '../meme';
 
-const axios = require('axios');
-
-
 class GameDriver{
     players: Player[];
     memeOneVotes: number;
@@ -22,12 +19,13 @@ class GameDriver{
         this.playerVotingTwo = null;
         this.displayMeme = null;
         this.playersUploaded = 0;
-        this.numPlayers = null;
+        this.numPlayers = 0;
     }
 
     addPlayer(playerName: String){
         let player = new Player(playerName);
         this.players.push(player);
+        this.numPlayers ++;
     }
 
     voteMemeOne(){
@@ -68,6 +66,10 @@ class GameDriver{
 
     increasePlayersUploaded(){
         this.playersUploaded ++;
+    }
+
+    getNumPlayers(){
+        return this.numPlayers;
     }
 
 }

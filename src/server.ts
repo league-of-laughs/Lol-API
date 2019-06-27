@@ -7,11 +7,7 @@ const host = '0.0.0.0'
 import GameDriver from './game/gameDriver';
 
 const app = express();
-
 app.use(bodyparser.json());
-// app.use(cors)
-
-
 
 app.get('/',(req,res) => {
     console.log('hit')
@@ -19,35 +15,43 @@ app.get('/',(req,res) => {
 })
 
 let server = app.listen(port);
-
 const io = require('socket.io')(server)
 
-let game = new GameDriver();
+const gamesMap = {};
+let game;
+
+const getGame = (room): GameDriver => {
+    return gamesMap[room];
+}
 
 io.on('connection',(socket) => {
-    console.log('new user connected');
+  console.log('new user connected');
 
-    socket.on('test',() => {
-        console.log('testing')
-        // socket.broadcast.emit('web-playerUploadedMeme',"alex");
-    })
+  socket.on('web-newGame',(room) => {
+    console.log(room);
+    gamesMap[room] = new GameDriver();
+    socket.join(room);
+    console.log('creating new game for room: '+room);
+  })
 
-    socket.on('web-newGame',() => {
-        game = new GameDriver();
-        console.log('creating new game');
-    })
+  socket.on('mobile-addPlayer',({room, name}) => {
+    console.log(room)
+    console.log(name)
+    try{
+      const game = getGame(room);
+      game.addPlayer(name);
+      socket.broadcast.to(room).emit('web-displayAddedPlayer',name);
+      console.log(`adding ${name} to game room: ${room}`);
+      console.log(game)
+    }catch(e){
+      console.log('room does not exist')
+    }
+  })
 
-    socket.on('mobile-addPlayer',(name: String) => {
-        console.log(name);
-        game.addPlayer(name);
-        socket.broadcast.emit('web-displayAddedPlayer',name);
-    })
-
-    socket.on('web-startGame', (meme) => {
-        console.log('starting game')
-        game.numPlayers = game.players.length;
-        console.log(game.numPlayers);
-        socket.broadcast.emit('mobile-start',meme);
+    socket.on('web-startGame', (meme, room) => {
+        const game = getGame(room);
+        console.log(`starting game with ${game.getNumPlayers()} players`);
+        socket.broadcast.to(room).emit('mobile-start',meme, room);
     })
 
     socket.on('mobile-uploadMeme',(data) => {
@@ -166,20 +170,12 @@ io.on('connection',(socket) => {
             socket.broadcast.emit('voting-done',winnerData);
             game.resetRound();
         }
-
-        
-        
     })
+
     socket.on('web-gameOver',(winnerName) => {
         console.log(winnerName);
         socket.broadcast.emit('gameWinner',winnerName);
     })
-
-    socket.on('web-newGame',() => {
-        game = new GameDriver();
-        socket.broadcast.emit('restart');
-    })
-
 })
 
 console.log('server running');
