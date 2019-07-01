@@ -9,7 +9,7 @@ import GameDriver from './game/gameDriver';
 const app = express();
 app.use(bodyparser.json());
 
-app.get('/',(req,res) => {
+app.get('/',(req, res) => {
     console.log('hit')
     res.sendFile('/pages/landing/index.html',{root:__dirname});
 })
@@ -21,30 +21,29 @@ const gamesMap = {};
 let game;
 
 const getGame = (room): GameDriver => {
-    return gamesMap[room];
+  return gamesMap[room];
 }
 
 io.on('connection',(socket) => {
   console.log('new user connected');
 
   socket.on('web-newGame',(room) => {
-    console.log(room);
     gamesMap[room] = new GameDriver();
     socket.join(room);
     console.log('creating new game for room: '+room);
   })
 
-  socket.on('mobile-addPlayer',({room, name}) => {
-    console.log(room)
-    console.log(name)
+  socket.on('mobile-addPlayer',({ room, name }) => {
     try{
       const game = getGame(room);
       game.addPlayer(name);
-      socket.broadcast.to(room).emit('web-displayAddedPlayer',name);
+      socket.join(room);
+      socket.broadcast.to(room).emit('web-displayAddedPlayer', name);
       console.log(`adding ${name} to game room: ${room}`);
       console.log(game)
+      socket.emit('mobile-attempt_join',true);
     }catch(e){
-      console.log('room does not exist')
+      socket.emit('mobile-attempt_join',false);
     }
   })
 

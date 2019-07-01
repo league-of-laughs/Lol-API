@@ -21,24 +21,23 @@ var getGame = function (room) {
 io.on('connection', function (socket) {
     console.log('new user connected');
     socket.on('web-newGame', function (room) {
-        console.log(room);
         gamesMap[room] = new gameDriver_1["default"]();
         socket.join(room);
         console.log('creating new game for room: ' + room);
     });
     socket.on('mobile-addPlayer', function (_a) {
         var room = _a.room, name = _a.name;
-        console.log(room);
-        console.log(name);
         try {
             var game_1 = getGame(room);
             game_1.addPlayer(name);
+            socket.join(room);
             socket.broadcast.to(room).emit('web-displayAddedPlayer', name);
             console.log("adding " + name + " to game room: " + room);
             console.log(game_1);
+            socket.emit('mobile-attempt_join', true);
         }
         catch (e) {
-            console.log('room does not exist');
+            socket.emit('mobile-attempt_join', false);
         }
     });
     socket.on('web-startGame', function (meme, room) {
