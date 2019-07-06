@@ -30,7 +30,7 @@ io.on('connection',(socket) => {
   socket.on('web-newGame',(room) => {
     gamesMap[room] = new GameDriver();
     socket.join(room);
-    console.log('creating new game for room: '+room);
+    console.log('creating new game for room: '+ room);
   })
 
   socket.on('mobile-addPlayer',({ room, name }) => {
@@ -47,11 +47,17 @@ io.on('connection',(socket) => {
     }
   })
 
-    socket.on('web-startGame', (meme, room) => {
-        const game = getGame(room);
-        console.log(`starting game with ${game.getNumPlayers()} players`);
-        socket.broadcast.to(room).emit('mobile-start',meme, room);
-    })
+  socket.on('web-startGame', (room) => {
+    console.log(gamesMap);
+    try{
+      console.log('starting game');
+      const game = getGame(room);
+      console.log(`starting game with ${game.getNumPlayers()} players`);
+      socket.broadcast.to(room).emit('mobile-start');
+    }catch(e){
+      console.log(e);
+    }
+  })
 
     socket.on('mobile-uploadMeme',(data) => {
         console.log('player uploading meme')

@@ -40,10 +40,17 @@ io.on('connection', function (socket) {
             socket.emit('mobile-attempt_join', false);
         }
     });
-    socket.on('web-startGame', function (meme, room) {
-        var game = getGame(room);
-        console.log("starting game with " + game.getNumPlayers() + " players");
-        socket.broadcast.to(room).emit('mobile-start', meme, room);
+    socket.on('web-startGame', function (room) {
+        console.log(gamesMap);
+        try {
+            console.log('starting game');
+            var game_2 = getGame(room);
+            console.log("starting game with " + game_2.getNumPlayers() + " players");
+            socket.broadcast.to(room).emit('mobile-start', room);
+        }
+        catch (e) {
+            console.log(e);
+        }
     });
     socket.on('mobile-uploadMeme', function (data) {
         console.log('player uploading meme');
