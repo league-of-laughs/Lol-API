@@ -46,20 +46,21 @@ io.on('connection', function (socket) {
             console.log('starting game');
             var game_2 = getGame(room);
             console.log("starting game with " + game_2.getNumPlayers() + " players");
-            socket.broadcast.to(room).emit('mobile-start', room);
+            socket.broadcast.to(room).emit('mobile-start');
         }
         catch (e) {
             console.log(e);
         }
     });
-    socket.on('mobile-uploadMeme', function (data) {
+    socket.on('mobile-uploadMeme', function (room, data) {
+        var game = getGame(room);
         console.log('player uploading meme');
         data = JSON.parse(data);
         console.log(data);
         game.increasePlayersUploaded();
         var name = data.name, topText = data.topText, bottomText = data.bottomText;
         game.updatePlayerMeme(name, topText, bottomText);
-        socket.broadcast.emit('web-playerUploadedMeme', name);
+        socket.broadcast.to(room).emit('web-playerUploadedMeme', name);
         for (var _i = 0, _a = game.players; _i < _a.length; _i++) {
             var player = _a[_i];
             if (player.name == name)
@@ -75,7 +76,7 @@ io.on('connection', function (socket) {
         console.log("players uploaded" + game.playersUploaded);
         if (game.playersUploaded == game.numPlayers) {
             console.log('done uploading');
-            socket.broadcast.emit('web-doneUploading', game.players);
+            io.sockets.to(room).emit('all-doneUploading', game.players);
         }
     });
     socket.on('web-setPlayerNumbers', function (data) {
@@ -94,7 +95,8 @@ io.on('connection', function (socket) {
         }
         socket.broadcast.emit('mobile-startVoting');
     });
-    socket.on('mobile-voteMeme', function (data) {
+    socket.on('mobile-voteMeme', function (room, data) {
+        var game = getGame(room);
         data = JSON.parse(data);
         console.log(data);
         console.log('voting');

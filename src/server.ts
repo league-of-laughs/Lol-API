@@ -59,7 +59,8 @@ io.on('connection',(socket) => {
     }
   })
 
-    socket.on('mobile-uploadMeme',(data) => {
+    socket.on('mobile-uploadMeme',( room, data) => {
+        const game  = getGame(room);
         console.log('player uploading meme')
         data = JSON.parse(data);
         console.log(data);
@@ -70,7 +71,7 @@ io.on('connection',(socket) => {
 
         game.updatePlayerMeme(name,topText,bottomText);
 
-        socket.broadcast.emit('web-playerUploadedMeme',name);
+        socket.broadcast.to(room).emit('web-playerUploadedMeme',name);
 
         for(let player of game.players){
             if(player.name == name)
@@ -87,7 +88,7 @@ io.on('connection',(socket) => {
 
         if(game.playersUploaded == game.numPlayers){
             console.log('done uploading')
-            socket.broadcast.emit('web-doneUploading',game.players);
+            io.sockets.to(room).emit('all-doneUploading',game.players);
         }
     })
 
@@ -107,8 +108,9 @@ io.on('connection',(socket) => {
         socket.broadcast.emit('mobile-startVoting');
     })
 
-    socket.on('mobile-voteMeme',(data) => {
-        
+    socket.on('mobile-voteMeme',(room, data) => {
+        const game = getGame(room);  
+
         data = JSON.parse(data);
         console.log(data);
         console.log('voting')
