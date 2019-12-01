@@ -3,9 +3,7 @@ import Meme from '../meme';
 class Player{
     name: String;
     currentMeme: Meme;
-    currentVote: number;
     knockedOut: boolean;
-    number: number;
     voted: boolean;
     uploaded: boolean;
 
@@ -13,8 +11,6 @@ class Player{
         this.name = name;
         this.knockedOut = false;
         this.currentMeme = null,
-        this.number = null;
-        this.currentVote = null;
         this.voted = false;
         this.uploaded = false;
     }
@@ -25,10 +21,6 @@ class Player{
 
     getName(){
         return this.name;
-    }
-
-    setNumber(number: number){
-        this.number = number;
     }
 
     setUploaded(){

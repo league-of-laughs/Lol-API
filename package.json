@@ -4,7 +4,7 @@
   "description": "the api for the lol app",
   "main": "./src/server.js",
   "scripts": {
-    "start": "node ./src/server.js",
+    "start": "tsc && node ./src/server.js",
     "postinstall": "npm run tsc",
     "tsc": "tsc"
   },

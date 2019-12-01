@@ -7,43 +7,60 @@ var host = '0.0.0.0';
 var gameDriver_1 = require("./game/gameDriver");
 var app = express();
 app.use(bodyparser.json());
-// app.use(cors)
 app.get('/', function (req, res) {
     console.log('hit');
     res.sendFile('/pages/landing/index.html', { root: __dirname });
 });
 var server = app.listen(port);
 var io = require('socket.io')(server);
-var game = new gameDriver_1["default"]();
+var gamesMap = {};
+var game;
+var getGame = function (room) {
+    return gamesMap[room];
+};
 io.on('connection', function (socket) {
     console.log('new user connected');
-    socket.on('test', function () {
-        console.log('testing');
-        // socket.broadcast.emit('web-playerUploadedMeme',"alex");
+    socket.on('web-newGame', function (room) {
+        gamesMap[room] = new gameDriver_1["default"]();
+        socket.join(room);
+        console.log('creating new game for room: ' + room);
     });
-    socket.on('web-newGame', function () {
-        game = new gameDriver_1["default"]();
-        console.log('creating new game');
+    socket.on('mobile-addPlayer', function (_a) {
+        var room = _a.room, name = _a.name;
+        try {
+            var game_1 = getGame(room);
+            game_1.addPlayer(name);
+            socket.join(room);
+            socket.broadcast.to(room).emit('web-displayAddedPlayer', name);
+            console.log("adding " + name + " to game room: " + room);
+            console.log(game_1);
+            socket.emit('mobile-attempt_join', true);
+        }
+        catch (e) {
+            socket.emit('mobile-attempt_join', false);
+        }
     });
-    socket.on('mobile-addPlayer', function (name) {
-        console.log(name);
-        game.addPlayer(name);
-        socket.broadcast.emit('web-displayAddedPlayer', name);
+    socket.on('web-startGame', function (room) {
+        console.log(gamesMap);
+        try {
+            console.log('starting game');
+            var game_2 = getGame(room);
+            console.log("starting game with " + game_2.getNumPlayers() + " players");
+            socket.broadcast.to(room).emit('mobile-start');
+        }
+        catch (e) {
+            console.log(e);
+        }
     });
-    socket.on('web-startGame', function (meme) {
-        console.log('starting game');
-        game.numPlayers = game.players.length;
-        console.log(game.numPlayers);
-        socket.broadcast.emit('mobile-start', meme);
-    });
-    socket.on('mobile-uploadMeme', function (data) {
+    socket.on('mobile-uploadMeme', function (room, data) {
+        var game = getGame(room);
         console.log('player uploading meme');
         data = JSON.parse(data);
         console.log(data);
         game.increasePlayersUploaded();
         var name = data.name, topText = data.topText, bottomText = data.bottomText;
         game.updatePlayerMeme(name, topText, bottomText);
-        socket.broadcast.emit('web-playerUploadedMeme', name);
+        socket.broadcast.to(room).emit('web-playerUploadedMeme', name);
         for (var _i = 0, _a = game.players; _i < _a.length; _i++) {
             var player = _a[_i];
             if (player.name == name)
@@ -59,7 +76,7 @@ io.on('connection', function (socket) {
         console.log("players uploaded" + game.playersUploaded);
         if (game.playersUploaded == game.numPlayers) {
             console.log('done uploading');
-            socket.broadcast.emit('web-doneUploading', game.players);
+            io.sockets.to(room).emit('all-doneUploading', game.players);
         }
     });
     socket.on('web-setPlayerNumbers', function (data) {
@@ -78,7 +95,8 @@ io.on('connection', function (socket) {
         }
         socket.broadcast.emit('mobile-startVoting');
     });
-    socket.on('mobile-voteMeme', function (data) {
+    socket.on('mobile-voteMeme', function (room, data) {
+        var game = getGame(room);
         data = JSON.parse(data);
         console.log(data);
         console.log('voting');
@@ -143,9 +161,6 @@ io.on('connection', function (socket) {
         console.log(winnerName);
         socket.broadcast.emit('gameWinner', winnerName);
     });
-    socket.on('web-newGame', function () {
-        game = new gameDriver_1["default"]();
-        socket.broadcast.emit('restart');
-    });
 });
 console.log('server running');
+//# sourceMappingURL=server.js.map
