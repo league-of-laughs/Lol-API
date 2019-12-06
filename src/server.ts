@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyparser = require('body-parser');
-
 const port = process.env.PORT || 3000;
 const host = '0.0.0.0'
 
@@ -27,88 +26,68 @@ const getGame = (room): GameDriver => {
 io.on('connection',(socket) => {
   console.log('new user connected');
 
-  socket.on('web-newGame',(room) => {
+  socket.on('host-newGame',(room) => {
     gamesMap[room] = new GameDriver();
     socket.join(room);
     console.log('creating new game for room: '+ room);
-  })
+  });
 
-  socket.on('mobile-addPlayer',({ room, name }) => {
+  socket.on('client-addPlayer',({ room, name }) => {
     try{
+      console.log(room)
       const game = getGame(room);
       game.addPlayer(name);
       socket.join(room);
-      socket.broadcast.to(room).emit('web-displayAddedPlayer', name);
+      socket.broadcast.to(room).emit('host-displayAddedPlayer', name);
       console.log(`adding ${name} to game room: ${room}`);
-      console.log(game)
-      socket.emit('mobile-attempt_join',true);
+      socket.emit('client-attempt_join',true);
     }catch(e){
-      socket.emit('mobile-attempt_join',false);
+      console.log(e);
+      socket.emit('client-attempt_join',false);
     }
-  })
+  });
 
-  socket.on('web-startGame', (room) => {
+  socket.on('host-startGame', (room) => {
     console.log(gamesMap);
     try{
       console.log('starting game');
       const game = getGame(room);
       console.log(`starting game with ${game.getNumPlayers()} players`);
-      socket.broadcast.to(room).emit('mobile-start');
+      socket.broadcast.to(room).emit('client-start');
     }catch(e){
       console.log(e);
     }
-  })
+  });
 
-    socket.on('mobile-uploadMeme',( room, data) => {
+    socket.on('client-uploadMeme',({ room, data }) => {
         const game  = getGame(room);
         console.log('player uploading meme')
-        data = JSON.parse(data);
         console.log(data);
-        
-        game.increasePlayersUploaded()
+        console.log(room)
 
-        let {name,topText,bottomText} = data;
+        const { name, top, bottom } = data;
 
-        game.updatePlayerMeme(name,topText,bottomText);
+        game.updatePlayerMeme(name,top,bottom);
 
-        socket.broadcast.to(room).emit('web-playerUploadedMeme',name);
+        socket.broadcast.to(room).emit('host-playerUploadedMeme',name);
 
-        for(let player of game.players){
-            if(player.name == name)
-                player.setUploaded();
-        }
-
-        let incomplete = true; 
-        for(let player of game.players){
-            if(player.uploaded == false)
-                incomplete = false;
-        }
-        console.log("number of players"+game.numPlayers);
-        console.log("players uploaded"+game.playersUploaded)
-
-        if(game.playersUploaded == game.numPlayers){
+        if(game.isDoneUploading()){
             console.log('done uploading')
             io.sockets.to(room).emit('all-doneUploading',game.players);
         }
-    })
+    });
 
-    socket.on('web-setPlayerNumbers',(data) => {
+    socket.on('host-setPlayerNumbers',(room, data) => {
         console.log('assigning 2 players');
         console.log(data)
-        let{name1,name2} = data;
-        for(let player of game.players) {
-            if(player.name == name1)
-                game.setPlayerVotingOne(player.name);
-        }
-        for(let player of game.players){
-            if(player.name == name2)
-                game.setPlayerVotingTwo(player.name)
-        }
+        let { name1, name2 } = data;
+        const game = getGame(room);
+        game.setPlayerNumbers(name1, name2);
 
-        socket.broadcast.emit('mobile-startVoting');
-    })
+        socket.broadcast.emit('client-startVoting');
+    });
 
-    socket.on('mobile-voteMeme',(room, data) => {
+    socket.on('client-voteMeme',(room, data) => {
         const game = getGame(room);  
 
         data = JSON.parse(data);
@@ -163,7 +142,7 @@ io.on('connection',(socket) => {
                         player.setKnockedOut();
                 }
             }
-            socket.broadcast.emit('web-addWinner',winner)
+            socket.broadcast.emit('host-addWinner',winner)
             let winnerData = {
                 meme: winningMeme,
                 data: game.players
@@ -179,10 +158,10 @@ io.on('connection',(socket) => {
         }
     })
 
-    socket.on('web-gameOver',(winnerName) => {
+    socket.on('host-gameOver',(winnerName) => {
         console.log(winnerName);
         socket.broadcast.emit('gameWinner',winnerName);
-    })
-})
+    });
+});
 
 console.log('server running');

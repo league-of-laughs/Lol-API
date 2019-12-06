@@ -19,13 +19,11 @@ class GameDriver{
         this.playerVotingTwo = null;
         this.displayMeme = null;
         this.playersUploaded = 0;
-        this.numPlayers = 0;
     }
 
     addPlayer(playerName: String){
         let player = new Player(playerName);
         this.players.push(player);
-        this.numPlayers ++;
     }
 
     voteMemeOne(){
@@ -43,7 +41,9 @@ class GameDriver{
                 player.currentMeme.updateBottomText(bottom);
                 player.currentMeme.updateTopText(top);
             }
-        })
+        });
+
+        this.increasePlayersUploaded();
     }
 
     setPlayerVotingOne(name:String){
@@ -68,10 +68,43 @@ class GameDriver{
         this.playersUploaded ++;
     }
 
-    getNumPlayers(){
-        return this.numPlayers;
+    isDoneUploading(){
+      for(let player of this.players){
+        if(player.name == name)
+          player.setUploaded();
+      }
+
+      let incomplete = true; 
+      for(let player of this.players){
+        if(player.uploaded == false)
+          incomplete = false;
+      }
+      console.log("number of players"+this.players.length);
+      console.log("players uploaded"+this.playersUploaded)
+
+      if(this.playersUploaded == this.numPlayers){
+          return true;
+      }
+
+      return false;
     }
 
+    setPlayerNumbers(name1, name2){
+      for(let player of this.players) {
+        if(player.name == name1){
+          this.setPlayerVotingOne(player.name);
+        }
+    }
+      for(let player of this.players){
+        if(player.name == name2){
+          this.setPlayerVotingTwo(player.name)
+        }
+      }
+    }
+
+    getNumPlayers(){
+      return this.players.length;
+    }
 }
 
 export default GameDriver;

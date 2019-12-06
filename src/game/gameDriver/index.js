@@ -11,12 +11,10 @@ var GameDriver = (function () {
         this.playerVotingTwo = null;
         this.displayMeme = null;
         this.playersUploaded = 0;
-        this.numPlayers = 0;
     }
     GameDriver.prototype.addPlayer = function (playerName) {
         var player = new player_1["default"](playerName);
         this.players.push(player);
-        this.numPlayers++;
     };
     GameDriver.prototype.voteMemeOne = function () {
         this.memeOneVotes++;
@@ -33,6 +31,7 @@ var GameDriver = (function () {
                 player.currentMeme.updateTopText(top);
             }
         });
+        this.increasePlayersUploaded();
     };
     GameDriver.prototype.setPlayerVotingOne = function (name) {
         this.playerVotingOne = name;
@@ -52,8 +51,41 @@ var GameDriver = (function () {
     GameDriver.prototype.increasePlayersUploaded = function () {
         this.playersUploaded++;
     };
+    GameDriver.prototype.isDoneUploading = function () {
+        for (var _i = 0, _a = this.players; _i < _a.length; _i++) {
+            var player = _a[_i];
+            if (player.name == name)
+                player.setUploaded();
+        }
+        var incomplete = true;
+        for (var _b = 0, _c = this.players; _b < _c.length; _b++) {
+            var player = _c[_b];
+            if (player.uploaded == false)
+                incomplete = false;
+        }
+        console.log("number of players" + this.players.length);
+        console.log("players uploaded" + this.playersUploaded);
+        if (this.playersUploaded == this.numPlayers) {
+            return true;
+        }
+        return false;
+    };
+    GameDriver.prototype.setPlayerNumbers = function (name1, name2) {
+        for (var _i = 0, _a = this.players; _i < _a.length; _i++) {
+            var player = _a[_i];
+            if (player.name == name1) {
+                this.setPlayerVotingOne(player.name);
+            }
+        }
+        for (var _b = 0, _c = this.players; _b < _c.length; _b++) {
+            var player = _c[_b];
+            if (player.name == name2) {
+                this.setPlayerVotingTwo(player.name);
+            }
+        }
+    };
     GameDriver.prototype.getNumPlayers = function () {
-        return this.numPlayers;
+        return this.players.length;
     };
     return GameDriver;
 }());
