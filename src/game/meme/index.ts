@@ -2,9 +2,9 @@ class Meme{
     topText: String;
     bottomText: String;
     
-    constructor(url:String){
-        this.topText = null;
-        this.bottomText = null;
+    constructor(top: String, bottom: String){
+        this.topText = top;
+        this.bottomText = bottom;
     }
 
     updateBottomText(text:String){

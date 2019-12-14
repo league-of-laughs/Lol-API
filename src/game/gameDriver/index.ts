@@ -5,11 +5,12 @@ class GameDriver{
     players: Player[];
     memeOneVotes: number;
     memeTwoVotes: number;
-    playerVotingOne: String;
-    playerVotingTwo: String;
+    playerVotingOne: Player;
+    playerVotingTwo: Player;
+    roundWinner: Player;
     displayMeme: String;
     playersUploaded: number;
-    numPlayers:number;
+    playersVoted: number;
 
     constructor(){
         this.players = [];
@@ -19,6 +20,7 @@ class GameDriver{
         this.playerVotingTwo = null;
         this.displayMeme = null;
         this.playersUploaded = 0;
+        this.playersVoted = 0;
     }
 
     addPlayer(playerName: String){
@@ -36,22 +38,43 @@ class GameDriver{
 
     updatePlayerMeme(name:String, top:String, bottom:String){
         this.players.map(player => {
-            if(player.name == name){
-                player.setCurrentMeme(new Meme(this.displayMeme));
-                player.currentMeme.updateBottomText(bottom);
-                player.currentMeme.updateTopText(top);
-            }
+          if(player.name == name){
+              player.setCurrentMeme(new Meme(top, bottom));
+          }
         });
 
         this.increasePlayersUploaded();
     }
 
-    setPlayerVotingOne(name:String){
-        this.playerVotingOne = name;
+    setPlayers(){
+      const inGame = [];
+
+      this.players.map(player => {
+        if(!player.knockedOut){
+          inGame.push(player);
+        }
+      });
+
+      if(inGame.length == 1){
+        return;
+      }
+
+      this.shuffle(inGame);
+
+      this.setPlayerVotingOne(inGame.pop());
+      this.setPlayerVotingTwo(inGame.pop());
     }
 
-    setPlayerVotingTwo(name:String){
-        this.playerVotingTwo = name;
+    setPlayerVotingOne(player: Player){
+        this.playerVotingOne = player;
+    }
+
+    setPlayerVotingTwo(player: Player){
+        this.playerVotingTwo = player;
+    }
+
+    setRoundWinner(player: Player){
+      this.roundWinner = player;
     }
 
     resetRound(){
@@ -59,30 +82,20 @@ class GameDriver{
         this.memeTwoVotes = 0;
         this.playerVotingOne = null;
         this.playerVotingTwo = null;
-        this.players.map(player => {
-            player.voted = false;
-        })
+        this.playersUploaded = 0;
+        this.playersVoted = 0;
+        this.roundWinner = null
     }
 
     increasePlayersUploaded(){
-        this.playersUploaded ++;
+        this.playersUploaded++;
     }
 
     isDoneUploading(){
-      for(let player of this.players){
-        if(player.name == name)
-          player.setUploaded();
-      }
-
-      let incomplete = true; 
-      for(let player of this.players){
-        if(player.uploaded == false)
-          incomplete = false;
-      }
       console.log("number of players"+this.players.length);
       console.log("players uploaded"+this.playersUploaded)
 
-      if(this.playersUploaded == this.numPlayers){
+      if(this.players.length == this.playersUploaded){
           return true;
       }
 
@@ -90,20 +103,45 @@ class GameDriver{
     }
 
     setPlayerNumbers(name1, name2){
-      for(let player of this.players) {
-        if(player.name == name1){
-          this.setPlayerVotingOne(player.name);
-        }
+      this.setPlayerVotingOne(name1);
+      this.setPlayerVotingTwo(name2);
     }
-      for(let player of this.players){
-        if(player.name == name2){
-          this.setPlayerVotingTwo(player.name)
-        }
+
+    vote(choice){
+      choice === 1 ? this.voteMemeOne() : this.voteMemeTwo();
+
+      this.playersVoted++;
+
+      if(this.isDoneVoting()){
+        this.handleWinner();
       }
+    }
+
+    isDoneVoting(){
+      return this.playersVoted === this.players.length;
     }
 
     getNumPlayers(){
       return this.players.length;
+    }
+
+    handleWinner(){
+      if(this.memeOneVotes > this.memeTwoVotes){
+        this.playerVotingTwo.setKnockedOut();
+        this.setRoundWinner(this.playerVotingTwo);
+      }
+
+      else{
+        this.playerVotingOne.setKnockedOut();
+        this.setRoundWinner(this.playerVotingOne);
+      }
+    }
+
+    shuffle(a){
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
     }
 }
 

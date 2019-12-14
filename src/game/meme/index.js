@@ -1,9 +1,9 @@
 "use strict";
 exports.__esModule = true;
 var Meme = (function () {
-    function Meme(url) {
-        this.topText = null;
-        this.bottomText = null;
+    function Meme(top, bottom) {
+        this.topText = top;
+        this.bottomText = bottom;
     }
     Meme.prototype.updateBottomText = function (text) {
         this.bottomText = text;
