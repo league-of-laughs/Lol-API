@@ -11,6 +11,8 @@ var GameDriver = (function () {
         this.playerVotingTwo = null;
         this.displayMeme = null;
         this.playersUploaded = 0;
+        this.playersVoted = 0;
+        this.playersKnockedout = 0;
     }
     GameDriver.prototype.addPlayer = function (playerName) {
         var player = new player_1["default"](playerName);
@@ -30,21 +32,37 @@ var GameDriver = (function () {
         });
         this.increasePlayersUploaded();
     };
-    GameDriver.prototype.setPlayerVotingOne = function (name) {
-        this.playerVotingOne = name;
+    GameDriver.prototype.setPlayers = function () {
+        var inGame = [];
+        this.players.map(function (player) {
+            if (!player.knockedOut) {
+                inGame.push(player);
+            }
+        });
+        if (inGame.length == 1) {
+            return;
+        }
+        this.shuffle(inGame);
+        this.setPlayerVotingOne(inGame.pop());
+        this.setPlayerVotingTwo(inGame.pop());
     };
-    GameDriver.prototype.setPlayerVotingTwo = function (name) {
-        this.playerVotingTwo = name;
+    GameDriver.prototype.setPlayerVotingOne = function (player) {
+        this.playerVotingOne = player;
+    };
+    GameDriver.prototype.setPlayerVotingTwo = function (player) {
+        this.playerVotingTwo = player;
+    };
+    GameDriver.prototype.setRoundWinner = function (player) {
+        this.roundWinner = player;
     };
     GameDriver.prototype.resetRound = function () {
         this.memeOneVotes = 0;
         this.memeTwoVotes = 0;
         this.playerVotingOne = null;
         this.playerVotingTwo = null;
-        this.players.map(function (player) {
-            player.voted = false;
-        });
         this.playersUploaded = 0;
+        this.playersVoted = 0;
+        this.roundWinner = null;
     };
     GameDriver.prototype.increasePlayersUploaded = function () {
         this.playersUploaded++;
@@ -61,8 +79,39 @@ var GameDriver = (function () {
         this.setPlayerVotingOne(name1);
         this.setPlayerVotingTwo(name2);
     };
+    GameDriver.prototype.vote = function (choice) {
+        choice === 1 ? this.voteMemeOne() : this.voteMemeTwo();
+        this.playersVoted++;
+        if (this.isDoneVoting()) {
+            this.handleWinner();
+        }
+    };
+    GameDriver.prototype.isDoneVoting = function () {
+        return this.playersVoted === this.players.length;
+    };
     GameDriver.prototype.getNumPlayers = function () {
         return this.players.length;
+    };
+    GameDriver.prototype.handleWinner = function () {
+        if (this.memeOneVotes > this.memeTwoVotes) {
+            this.playerVotingTwo.setKnockedOut();
+            this.setRoundWinner(this.playerVotingTwo);
+        }
+        else {
+            this.playerVotingOne.setKnockedOut();
+            this.setRoundWinner(this.playerVotingOne);
+        }
+        this.playersKnockedout++;
+    };
+    GameDriver.prototype.isWinner = function () {
+        return this.playersKnockedout === this.players.length - 1;
+    };
+    GameDriver.prototype.shuffle = function (a) {
+        var _a;
+        for (var i = a.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            _a = [a[j], a[i]], a[i] = _a[0], a[j] = _a[1];
+        }
     };
     return GameDriver;
 }());

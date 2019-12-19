@@ -11,6 +11,7 @@ class GameDriver{
     displayMeme: String;
     playersUploaded: number;
     playersVoted: number;
+    playersKnockedout: number;
 
     constructor(){
         this.players = [];
@@ -21,6 +22,7 @@ class GameDriver{
         this.displayMeme = null;
         this.playersUploaded = 0;
         this.playersVoted = 0;
+        this.playersKnockedout = 0;
     }
 
     addPlayer(playerName: String){
@@ -135,6 +137,12 @@ class GameDriver{
         this.playerVotingOne.setKnockedOut();
         this.setRoundWinner(this.playerVotingOne);
       }
+
+      this.playersKnockedout++;
+    }
+
+    isWinner(){
+      return this.playersKnockedout === this.players.length - 1;
     }
 
     shuffle(a){

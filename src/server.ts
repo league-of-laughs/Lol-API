@@ -76,7 +76,7 @@ io.on('connection',(socket) => {
       const game = getGame(room);
       game.setPlayers();
 
-      socket.broadcast.emit('client-startVoting');
+      io.sockets.to(room).emit('client-startVoting', game);
     });
 
     socket.on('client-voteMeme',(room, choice) => {
@@ -86,10 +86,15 @@ io.on('connection',(socket) => {
 
       if(game.isDoneVoting()){
         const winner = game.roundWinner;
-        socket.broadcast.emit('host-addWinner',winner)
+
+        if(game.isWinner()){
+          socket.broadcast.emit('game-over', winner);
+        }
         
-        socket.broadcast.emit('voting-done',winner);
-        game.resetRound();
+        else{
+          socket.broadcast.emit('voting-done',winner);
+          game.resetRound();
+        }
       }
   });
 
