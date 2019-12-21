@@ -68,16 +68,17 @@ io.on('connection', function (socket) {
         game.setPlayers();
         io.sockets.to(room).emit('client-startVoting', game);
     });
-    socket.on('client-voteMeme', function (room, choice) {
+    socket.on('client-voteMeme', function (_a) {
+        var room = _a.room, choice = _a.choice;
         var game = getGame(room);
         game.vote(choice);
         if (game.isDoneVoting()) {
             var winner = game.roundWinner;
             if (game.isWinner()) {
-                socket.broadcast.emit('game-over', winner);
+                io.sockets.to(room).emit('game-over', winner);
             }
             else {
-                socket.broadcast.emit('voting-done', winner);
+                io.sockets.to(room).emit('voting-done', winner);
                 game.resetRound();
             }
         }

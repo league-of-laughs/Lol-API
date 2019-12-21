@@ -95,11 +95,11 @@ var GameDriver = (function () {
     GameDriver.prototype.handleWinner = function () {
         if (this.memeOneVotes > this.memeTwoVotes) {
             this.playerVotingTwo.setKnockedOut();
-            this.setRoundWinner(this.playerVotingTwo);
+            this.setRoundWinner(this.playerVotingOne);
         }
         else {
             this.playerVotingOne.setKnockedOut();
-            this.setRoundWinner(this.playerVotingOne);
+            this.setRoundWinner(this.playerVotingTwo);
         }
         this.playersKnockedout++;
     };

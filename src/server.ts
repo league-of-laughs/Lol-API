@@ -79,7 +79,7 @@ io.on('connection',(socket) => {
       io.sockets.to(room).emit('client-startVoting', game);
     });
 
-    socket.on('client-voteMeme',(room, choice) => {
+    socket.on('client-voteMeme',({ room, choice }) => {
       const game = getGame(room);  
 
       game.vote(choice);
@@ -88,11 +88,11 @@ io.on('connection',(socket) => {
         const winner = game.roundWinner;
 
         if(game.isWinner()){
-          socket.broadcast.emit('game-over', winner);
+          io.sockets.to(room).emit('game-over', winner);
         }
         
         else{
-          socket.broadcast.emit('voting-done',winner);
+          io.sockets.to(room).emit('voting-done',winner);
           game.resetRound();
         }
       }
