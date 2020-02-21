@@ -53,6 +53,12 @@ io.on('connection',(socket) => {
     }
   });
 
+    socket.on('host-caption_timeout', (room) => {
+      console.log('timeout');
+      const game = getGame(room);
+      io.sockets.to(room).emit('all-doneUploading',game.players);
+    });
+
     socket.on('client-uploadMeme',({ room, data }) => {
       const game  = getGame(room);
       console.log('player uploading meme')

@@ -48,6 +48,10 @@ io.on('connection', function (socket) {
             console.log(e);
         }
     });
+    socket.on('host-caption_timeout', function (room) {
+        var game = getGame(room);
+        io.sockets.to(room).emit('all-doneUploading', game.players);
+    });
     socket.on('client-uploadMeme', function (_a) {
         var room = _a.room, data = _a.data;
         var game = getGame(room);

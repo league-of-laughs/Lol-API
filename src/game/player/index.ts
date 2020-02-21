@@ -10,7 +10,7 @@ class Player{
     constructor(name:String){
         this.name = name;
         this.knockedOut = false;
-        this.currentMeme = null,
+        this.currentMeme = new Meme('',''),
         this.voted = false;
         this.uploaded = false;
     }

@@ -41,7 +41,12 @@ class GameDriver{
     updatePlayerMeme(name:String, top:String, bottom:String){
         this.players.map(player => {
           if(player.name == name){
+            if(!top && !bottom){
+              player.setKnockedOut();
+            }
+            else{
               player.setCurrentMeme(new Meme(top, bottom));
+            }
           }
         });
 

@@ -27,7 +27,12 @@ var GameDriver = (function () {
     GameDriver.prototype.updatePlayerMeme = function (name, top, bottom) {
         this.players.map(function (player) {
             if (player.name == name) {
-                player.setCurrentMeme(new meme_1["default"](top, bottom));
+                if (!top && !bottom) {
+                    player.setKnockedOut();
+                }
+                else {
+                    player.setCurrentMeme(new meme_1["default"](top, bottom));
+                }
             }
         });
         this.increasePlayersUploaded();

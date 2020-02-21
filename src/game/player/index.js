@@ -1,10 +1,11 @@
 "use strict";
 exports.__esModule = true;
+var meme_1 = require("../meme");
 var Player = (function () {
     function Player(name) {
         this.name = name;
         this.knockedOut = false;
-        this.currentMeme = null,
+        this.currentMeme = new meme_1["default"]('', ''),
             this.voted = false;
         this.uploaded = false;
     }
