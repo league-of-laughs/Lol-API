@@ -104,6 +104,22 @@ io.on('connection',(socket) => {
       }
   });
 
+  socket.on('host-vote_timeout', (room) => {
+    const game = getGame(room);
+    game.handleWinner();
+    
+    const winner = game.roundWinner;
+
+    if(game.isWinner()){
+      io.sockets.to(room).emit('game-over', winner);
+    }
+    
+    else{
+      io.sockets.to(room).emit('voting-done',winner);
+      game.resetRound();
+    }
+  });
+
     socket.on('host-gameOver',(winnerName) => {
       console.log(winnerName);
       socket.broadcast.emit('gameWinner',winnerName);

@@ -49,6 +49,7 @@ io.on('connection', function (socket) {
         }
     });
     socket.on('host-caption_timeout', function (room) {
+        console.log('timeout');
         var game = getGame(room);
         io.sockets.to(room).emit('all-doneUploading', game.players);
     });
@@ -85,6 +86,18 @@ io.on('connection', function (socket) {
                 io.sockets.to(room).emit('voting-done', winner);
                 game.resetRound();
             }
+        }
+    });
+    socket.on('host-vote_timeout', function (room) {
+        var game = getGame(room);
+        game.handleWinner();
+        var winner = game.roundWinner;
+        if (game.isWinner()) {
+            io.sockets.to(room).emit('game-over', winner);
+        }
+        else {
+            io.sockets.to(room).emit('voting-done', winner);
+            game.resetRound();
         }
     });
     socket.on('host-gameOver', function (winnerName) {
