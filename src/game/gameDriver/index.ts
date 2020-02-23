@@ -30,6 +30,11 @@ class GameDriver{
         this.players.push(player);
     }
 
+    removePlayer(targetName: String){
+      const removed = this.players.filter(player => player.getName() !== targetName);
+      this.players = removed;
+    }
+
     voteMemeOne(){
         this.memeOneVotes ++;
     }

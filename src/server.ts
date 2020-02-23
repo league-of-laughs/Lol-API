@@ -107,7 +107,7 @@ io.on('connection',(socket) => {
   socket.on('host-vote_timeout', (room) => {
     const game = getGame(room);
     game.handleWinner();
-    
+
     const winner = game.roundWinner;
 
     if(game.isWinner()){
@@ -124,6 +124,18 @@ io.on('connection',(socket) => {
       console.log(winnerName);
       socket.broadcast.emit('gameWinner',winnerName);
     });
+
+    socket.on('client-disconnect', ({ name, room }) => {
+      console.log(room);
+      const game = getGame(room);
+      game.removePlayer(name);
+      console.log(game)
+      io.sockets.to(room).emit('host-player_disconnect', name);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('disconnected')
+    })
 });
 
 console.log('server running');

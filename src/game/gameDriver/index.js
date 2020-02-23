@@ -18,6 +18,10 @@ var GameDriver = (function () {
         var player = new player_1["default"](playerName);
         this.players.push(player);
     };
+    GameDriver.prototype.removePlayer = function (targetName) {
+        var removed = this.players.filter(function (player) { return player.getName() !== targetName; });
+        this.players = removed;
+    };
     GameDriver.prototype.voteMemeOne = function () {
         this.memeOneVotes++;
     };

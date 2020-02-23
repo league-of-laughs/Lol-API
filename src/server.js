@@ -104,6 +104,17 @@ io.on('connection', function (socket) {
         console.log(winnerName);
         socket.broadcast.emit('gameWinner', winnerName);
     });
+    socket.on('client-disconnect', function (_a) {
+        var name = _a.name, room = _a.room;
+        console.log(room);
+        var game = getGame(room);
+        game.removePlayer(name);
+        console.log(game);
+        io.sockets.to(room).emit('host-player_disconnect', name);
+    });
+    socket.on('disconnect', function () {
+        console.log('disconnected');
+    });
 });
 console.log('server running');
 //# sourceMappingURL=server.js.map
